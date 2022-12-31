@@ -1,3 +1,1 @@
-# cofre de projetos1
- Portifólio de cofre de projetos
-teste
+Objetivo: Criar site para gerir projetos utilizando HTML5, CSS3, javaScript, PHP e MySQL.
