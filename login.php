@@ -54,7 +54,7 @@
         background-color: hsla(0, 0%, 100%, 0.9) !important;
         backdrop-filter: saturate(200%) blur(25px);
       }
-
+      
       @media screen and (min-width: 992px) {
         section {
             height: 100vh;
@@ -72,30 +72,36 @@
           <p class="mb-4 opacity-70" style="color: hsl(218, 81%, 85%)">
             This project was created by me with JavaScript, PHP, MySQL and Bootstrap.
           </p>
-        </div>
-  
+        </div>  
         <div class="col-lg-6 mb-5 mb-lg-0 position-relative">
           <div id="radius-shape-1" class="position-absolute rounded-circle shadow-5-strong"></div>
           <div id="radius-shape-2" class="position-absolute shadow-5-strong"></div>
-  
           <div class="card bg-glass">
             <div class="card-body px-4 py-5 px-md-5">
-
-              <form>                
-                <div class="form-outline mb-4">
-                  <input type="email" id="form3Example3" class="form-control" placeholder="Email">              
+              
+<!--Formulário com validações-->              
+              <form class="needs-validation" novalidate>                    
+                <div class="form-outline form-floating mb-4">
+                  <input type="email" id="emailAdress" class="form-control" placeholder="Email" required>
+                  <label for="emailAdress">Email</label>
+                  <div class="invalid-feedback">
+                    <small>Type your email address.</small> 
+                  </div>                
                 </div>
   
-                <div class="form-outline mb-4">
-                  <input type="password" id="form3Example4" class="form-control" placeholder="Password">
-                </div>
+                <div class="form-outline form-floating mb-4">
+                  <input type="password" id="passwordLogin" class="form-control" placeholder="Password" required>
+                  <label for="passwordLogin">Password</label>
+                  <div class="invalid-feedback">
+                    <small>Type your password.</small> 
+                  </div>      
+                </div>    
 
                 <button type="submit" class="btn btn-secondary btn-block mb-0">
                   Login
                 </button>
 
-                <a class="btn btn-secondary btn-block mb-0" href="signUp.html" role="button">Sign Up</a>
-               
+                <a class="btn btn-secondary btn-block mb-0" href="signUp.php" role="button">Sign Up</a>               
               </form>
 
             </div>
@@ -107,5 +113,6 @@
   <!-- Section: Design Block -->
 
     <script src="js/bootstrap.bundle.min.js"></script>
+    <script src="js/formValidator.js"></script>
 </body>
 </html>
