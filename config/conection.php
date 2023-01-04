@@ -1,6 +1,5 @@
 <?php
 /* DOIS MODOS POSSÍVEIS -> local e produção */
-
 $modo = 'local';
 
 if ($modo == 'local') {
@@ -24,4 +23,11 @@ try {
 } catch (PDOException $erro) {
     echo "Falha ao se conectar com o banco!";
 }
+
+function checkInput($input) {
+    $input = trim($input);
+    $input = stripslashes($input);
+    $input = htmlspecialchars($input);
+    return $input;
+  }
 ?>
