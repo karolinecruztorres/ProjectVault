@@ -1,3 +1,16 @@
+<?php
+require('config/conection.php');
+
+// Verificação de autorização
+$sql = $pdo->prepare("SELECT * FROM users WHERE token=? LIMIT 1");
+$sql->execute(array($_SESSION['TOKEN']));
+$user = $sql->fetch(PDO::FETCH_ASSOC);
+// Se não existir o usuário
+  if(!$user){
+    header('location: index.php');
+  }
+?>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -33,8 +46,9 @@
 <header class="d-flex justify-content-center py-3">
   <ul class="nav nav-pills">
     <li class="nav-item"><a href="#" class="nav-link active" style="background-color: #55595c;color:#eceeef;" aria-current="page">Home</a></li>
-    <li class="nav-item"><a href="#" class="nav-link" style="color:#55595c;">Add New Projects</a></li>
+    <li class="nav-item"><a href="#" class="nav-link" style="color:#55595c;">Add Projects</a></li>
     <li class="nav-item"><a href="#" class="nav-link" style="color:#55595c;">About me</a></li>
+    <li class="nav-item"><a href="logout.php" class="nav-link" style="color:#55595c;">Logout</a></li>
   </ul>
 </header>
   
@@ -85,3 +99,4 @@
 <script src="js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
+

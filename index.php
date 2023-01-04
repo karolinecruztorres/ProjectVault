@@ -1,5 +1,32 @@
 <?php 
-require('config/conection.php')
+require('config/conection.php');
+
+if(isset($_POST['email']) && isset($_POST['password']) && !empty($_POST['email']) && !empty($_POST['password'])){
+  
+  // Receber os dados vindos do post e limpar
+  $email = checkInput($_POST['email']);
+  $password = checkInput($_POST['password']);
+  $password_cript = sha1($password);
+
+  // Verificar se usuário existe
+  $sql = $pdo->prepare("SELECT * FROM users WHERE email=? AND _password=? LIMIT 1");
+  $sql->execute(array($email,$password_cript));
+  $user = $sql->fetch(PDO::FETCH_ASSOC);
+  if($user){
+    // Se existe o usuário, verificar se o cadastro foi confirmado
+    // Criar um token
+    $token = sha1(uniqid().date('d-m-Y-H-i-s'));
+    // Atualizar o token deste usuário no banco
+    $sql = $pdo->prepare("UPDATE users SET token=? WHERE email=? AND _password=?");
+    if($sql->execute(array($token,$email,$password_cript))){
+        // Armazenar este token na sessão (SESSION)
+        $_SESSION['TOKEN'] = $token;
+        header('location: home.php');
+    }
+  }else{
+    $err_login = "The email or password is incorrect!";
+  }
+}
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -57,8 +84,26 @@ require('config/conection.php')
     margin-bottom: 25px;
     font-size: 14px; }
 
+    .err_login {
+      color: red;
+      text-align: center;
+      margin-bottom: 20px;
+      font-size: 14px;
+      font-weight: 600; } 
+    
+    .account {
+    text-decoration: none;
+    text-align: center;
+    margin-top: 20px;
+    font-size: 14px;
+    color: black;
+    font-weight: 600; }
+
+    .account:hover {
+    color: rgb(11, 153, 11); }
+
     /*solução para tornar altura do background responsiva para todostamanhos*/
-    @media screen and (min-width: 992px) {
+    @media screen and (min-width: 271px) {
       section {height: 100vh;} }
   </style>
   
@@ -79,7 +124,7 @@ require('config/conection.php')
           <div class="card-body px-4 py-5 px-md-5">
             
             <!--Formulário com validações-->              
-            <form>   
+            <form method="post">   
               <!--Mensagem de cadastro realizado-->
               <?php if (isset($_GET['result']) && ($_GET['result']=="ok")){ ?>
                 <div class="sucess animate__animated animate__rubberBand">
@@ -89,22 +134,32 @@ require('config/conection.php')
 
               <!--Campo de email-->
               <div class="form-outline form-floating mb-4">
-                <input type="email" id="email" class="form-control"placeholder="Email" required>
+                <input type="email" id="email" class="form-control" name="email" placeholder="Email" required>
                 <label for="email">Email</label>
               </div>
 
               <!--Campo de senha-->
               <div class="form-outline form-floating mb-4">
-                <input type="password" id="passwordLogin" class="form-control"placeholder="Password" required>
-                <label for="passwordLogin">Password</label>
+                <input type="password" id="password" class="form-control" name="password" placeholder="Password" required>
+                <label for="password">Password</label>
               </div>    
 
+              <?php if(isset($err_login)){ ?>
+                <div class="err_login animate__animated animate__headShake">
+                  <?php echo $err_login; ?>
+                </div>  
+              <?php } ?> 
+
               <div class="text-center">
-                <button type="submit" class="btn btn-secondary btn-block me-4">
+                <button type="submit" class="btn btn-secondary btn-block mt-1">
                   Login
-                </button>              
-                <a class="btn btn-secondary btn-block" href="signUp.php"role="button">Sign Up</a>  
-              </div>   
+                </button>               
+              </div> 
+              
+              <div class="account">
+                <a class="account" href="signUp.php">Create new account</a>       
+              </div> 
+
             </form>
           </div>
         </div>

@@ -1,4 +1,6 @@
 <?php
+session_start();
+
 /* DOIS MODOS POSSÍVEIS -> local e produção */
 $modo = 'local';
 

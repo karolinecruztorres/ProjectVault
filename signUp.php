@@ -47,7 +47,7 @@ if(isset($_POST['fullName']) && isset($_POST['email']) && isset($_POST['password
           $status = "new";
           $registration_date = date('d/m/Y');
           $sql = $pdo->prepare("INSERT INTO users VALUES (null,?,?,?,?,?,?,?)");
-          if($sql->execute(array($name,$email,$password_cript,$reset_password,$token,$status, $registration_date))){
+          if($sql->execute(array($name,$email,$password_cript,$reset_password,$token,$status,$registration_date))){
               header('location: index.php?result=ok');
           }
       }else{
@@ -126,7 +126,7 @@ if(isset($_POST['fullName']) && isset($_POST['email']) && isset($_POST['password
       margin: 4px 0px 10px 4px;
       font-size: 14px; }
 
-    .login {
+    .account {
     text-decoration: none;
     text-align: center;
     margin-top: 20px;
@@ -134,7 +134,7 @@ if(isset($_POST['fullName']) && isset($_POST['email']) && isset($_POST['password
     color: black;
     font-weight: 600; }
 
-    .login:hover {
+    .account:hover {
     color: rgb(11, 153, 11); }
 
     /*solução para tornar altura do background responsiva para todos tamanhos*/
@@ -221,8 +221,8 @@ if(isset($_POST['fullName']) && isset($_POST['email']) && isset($_POST['password
                 </button>
               </div> 
 
-              <div class="login">
-                <a class="login" href="index.php">Already a member? Log in</a>       
+              <div class="account">
+                <a class="account" href="index.php">Already a member? Log in</a>       
               </div> 
             </form> 
           </div>
