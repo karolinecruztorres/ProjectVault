@@ -1,7 +1,14 @@
 <?php
 session_start();
+// Requerimento do PHPMailer
+use PHPMailer\PHPMailer\PHPMailer;
+use PHPMailer\PHPMailer\Exception;
 
-/* DOIS MODOS POSSÍVEIS -> local e produção */
+require 'phpMailer/src/Exception.php';
+require 'phpMailer/src/PHPMailer.php';
+require 'phpMailer/src/SMTP.php';
+
+/* Dois modos de conexão possíveis-> local e produção */
 $modo = 'local';
 
 if ($modo == 'local') {
@@ -18,6 +25,7 @@ if ($modo =='producao') {
     $banco = ""; 
 }
 
+// Conexão com banco de dados
 try {
     $pdo = new PDO("mysql:host=$servidor;dbname=$banco",$usuario,$senha);
     $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
@@ -31,5 +39,20 @@ function checkInput($input) {
     $input = stripslashes($input);
     $input = htmlspecialchars($input);
     return $input;
-  }
+}
+
+// Função para autenticação
+function auth($tokenSession) {
+    global $pdo;
+    // Verificação de autorização
+    $sql = $pdo->prepare("SELECT * FROM users WHERE token=? LIMIT 1");
+    $sql->execute(array($tokenSession));
+    $user = $sql->fetch(PDO::FETCH_ASSOC);
+    // Se não existir o usuário
+    if(!$user){
+        return false;
+    }else {
+        return $user;
+    }
+}
 ?>

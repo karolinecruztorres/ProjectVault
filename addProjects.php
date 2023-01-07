@@ -17,7 +17,7 @@ if($userOk){
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="css/bootstrap.min.css">
-    <title>Project Vault</title>
+    <title>Add Projects</title>
 </head>
 <body>
 <style>
@@ -44,8 +44,8 @@ if($userOk){
 
 <header class="d-flex justify-content-center py-3">
   <ul class="nav nav-pills">
-    <li class="nav-item"><a href="#" class="nav-link active" style="background-color: #55595c;color:#eceeef;" aria-current="page">Home</a></li>
-    <li class="nav-item"><a href="addProjects.php" class="nav-link" style="color:#55595c;">Add Projects</a></li>
+    <li class="nav-item"><a href="home.php" class="nav-link active" style="background-color: #55595c;color:#eceeef;" aria-current="page">Home</a></li>
+    <li class="nav-item"><a href="#" class="nav-link" style="color:#55595c;">Add Projects</a></li>
     <li class="nav-item"><a href="#" class="nav-link" style="color:#55595c;">About me</a></li>
     <li class="nav-item"><a href="logout.php" class="nav-link" style="color:#55595c;">Logout</a></li>
   </ul>
@@ -65,7 +65,7 @@ if($userOk){
   <div class="container">
     <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 g-3">  
 <!-- criado foreach que insere a <div> do grid que buscará no banco de dados os peojetos a serem mostrados, de acordo com a quantidade de elementos da array. Próxima etapa será tornar array responsiva com banco de dados disposto no MySQL.-->
-      <?php $quantidadeDiv = ["calculator", "calendar", "clock", "raffle", "converter"]; ?>
+      <?php $quantidadeDiv = ["New Project"]; ?>
       <?php foreach ($quantidadeDiv as $key => $value):?>
         <div class="col">
           <div class="card shadow-sm">

@@ -2,26 +2,28 @@
 require('config/conection.php');
 
 if(isset($_POST['email']) && isset($_POST['password']) && !empty($_POST['email']) && !empty($_POST['password'])){
-  
   // Receber os dados vindos do post e limpar
   $email = checkInput($_POST['email']);
   $password = checkInput($_POST['password']);
   $password_cript = sha1($password);
-
   // Verificar se usuário existe
   $sql = $pdo->prepare("SELECT * FROM users WHERE email=? AND _password=? LIMIT 1");
   $sql->execute(array($email,$password_cript));
   $user = $sql->fetch(PDO::FETCH_ASSOC);
   if($user){
     // Se existe o usuário, verificar se o cadastro foi confirmado
-    // Criar um token
-    $token = sha1(uniqid().date('d-m-Y-H-i-s'));
-    // Atualizar o token deste usuário no banco
-    $sql = $pdo->prepare("UPDATE users SET token=? WHERE email=? AND _password=?");
-    if($sql->execute(array($token,$email,$password_cript))){
+    if($user['status']=="confirmed"){
+      // Criar um token
+      $token = sha1(uniqid().date('d-m-Y-H-i-s'));
+      // Atualizar o token deste usuário no banco
+      $sql = $pdo->prepare("UPDATE users SET token=? WHERE email=? AND _password=?");
+      if($sql->execute(array($token,$email,$password_cript))){
         // Armazenar este token na sessão (SESSION)
         $_SESSION['TOKEN'] = $token;
         header('location: home.php');
+      }  
+    }else{
+      $err_login = "Please, verify and confirm your email address";
     }
   }else{
     $err_login = "The email or password is incorrect!";
@@ -31,12 +33,12 @@ if(isset($_POST['email']) && isset($_POST['password']) && !empty($_POST['email']
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="css/bootstrap.min.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
-    <title>Login</title>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="css/bootstrap.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
+  <title>Login</title>
 </head>
 <body>
 <!-- Section: Design Block -->

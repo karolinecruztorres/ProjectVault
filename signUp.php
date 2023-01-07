@@ -2,11 +2,11 @@
 require('config/conection.php');
 
 // Verificar se a postagem existe de acordo com os campos
-if(isset($_POST['fullName']) && isset($_POST['email']) && isset($_POST['password']) && isset($_POST['rePassword'])){
+if(isset($_POST['fullName']) && isset($_POST['email']) && isset($_POST['password']) && isset($_POST['rePassword'])) {
   // Verificar se todos os campos foram preenchidos
-  if(empty($_POST['fullName']) or empty($_POST['email']) or empty($_POST['password']) or empty($_POST['rePassword']) or empty($_POST['terms'])){
+  if(empty($_POST['fullName']) or empty($_POST['email']) or empty($_POST['password']) or empty($_POST['rePassword']) or empty($_POST['terms'])) {
     $general_err = "Todos os campos são obrigatórios!";
-  }else{
+  }else {
     // Receber valores vindos via post e limpar caracteres indesejados
     $name = checkInput($_POST['fullName']);
     $email = checkInput($_POST['email']);
@@ -31,28 +31,52 @@ if(isset($_POST['fullName']) && isset($_POST['email']) && isset($_POST['password
         $err_rePassword = "Password do no match.";
     }
     // Verificar se checkbox foi marcado
-    if($checkbox !== "ok"){
+    if($checkbox !== "ok") {
        $err_checkbox = "Disabled";
     }
 
-    if(!isset($general_err) && !isset($err_name) && !isset($err_email) && !isset($err_password) && !isset($err_rePassword) && !isset($err_checkbox)){
+    if(!isset($general_err) && !isset($err_name) && !isset($err_email) && !isset($err_password) && !isset($err_rePassword) && !isset($err_checkbox)) {
       // Verificar se o email já está cadastrado no banco
       $sql = $pdo->prepare("SELECT * FROM users WHERE email=? LIMIT 1");
       $sql->execute(array($email));
       $user = $sql->fetch();
       // Se não existir o usuário, adicionar ao banco
-      if(!$user){
-          $reset_password="";
-          $token="";
-          $status = "new";
-          $registration_date = date('d/m/Y');
-          $sql = $pdo->prepare("INSERT INTO users VALUES (null,?,?,?,?,?,?,?)");
-          if($sql->execute(array($name,$email,$password_cript,$reset_password,$token,$status,$registration_date))){
-              header('location: index.php?result=ok');
+      if(!$user) {
+        $reset_password="";
+        $token="";
+        $confirmation_code = uniqid();
+        $status = "new";
+        $registration_date = date('d/m/Y');
+        $sql = $pdo->prepare("INSERT INTO users VALUES (null,?,?,?,?,?,?,?,?)");
+        if($sql->execute(array($name,$email,$password_cript,$reset_password,$token,$confirmation_code,$status,$registration_date))){
+          // Se o modo de conexão for local
+          if($modo == "local") {
+            header('location: index.php?result=ok');
           }
+          // Se o modo de conexão for produção
+          if($modo == "producao") {
+            // Enviar email para usuário
+            $mail = new PHPMailer(true);
+
+            try {
+              //Recipients
+              $mail->setFrom('sistema@emailsistema.com', 'Sistema de login'); // Who is sending the email
+              $mail->addAddress($email, $name); // Add a recipient
+
+              //Content
+              $mail->isHTML(true); //Corpo do email como HTML
+              $mail->Subject = 'Confirm your registration!'; // Título (assunto do email)
+              $mail->Body    = '<b><h1>Welcome to Project Vault</h1></b><br><br><p>To start using the platform, please, confirm your email address by clicking the button below:</p><br><br><a style="background:green; color:white; text-decoration:none; padding:20px; border-radius:5px" href="https://seusistema.com.br/confirmacao.php?cod_confirm='.$confirmation_code.'">Confirmar Email</a>';
+              $mail->send();
+              header('location: thankyou.html');
+            }catch (Exception $e) {
+              echo "Message could not be sent. Mailer Error: {$mail->ErrorInfo}";
+            } 
+          }
+        }
       }else{
-          // Erro de usuário já cadastrado
-          $general_err = "Usuário já cadastrado";
+        // Erro de usuário já cadastrado
+        $general_err = "Usuário já cadastrado";
       }
     }
   }
@@ -61,12 +85,12 @@ if(isset($_POST['fullName']) && isset($_POST['email']) && isset($_POST['password
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="css/bootstrap.min.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
-    <title>Sign Up</title>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="css/bootstrap.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
+  <title>Sign Up</title>
 </head>
 <body>
 <!-- Section: Design Block -->
