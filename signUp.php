@@ -1,10 +1,10 @@
 <?php
 require('config/conection.php');
 
-// Verificar se a postagem existe de acordo com os campos
+// Verificar se todos os campos existem
 if(isset($_POST['fullName']) && isset($_POST['email']) && isset($_POST['password']) && isset($_POST['rePassword'])) {
   // Verificar se todos os campos foram preenchidos
-  if(empty($_POST['fullName']) or empty($_POST['email']) or empty($_POST['password']) or empty($_POST['rePassword']) or empty($_POST['terms'])) {
+  if(empty($_POST['fullName']) || empty($_POST['email']) || empty($_POST['password']) || empty($_POST['rePassword']) || empty($_POST['terms'])) {
     $general_err = "Todos os campos são obrigatórios!";
   }else {
     // Receber valores vindos via post e limpar caracteres indesejados
@@ -15,40 +15,40 @@ if(isset($_POST['fullName']) && isset($_POST['email']) && isset($_POST['password
     $rePassword = checkInput($_POST['rePassword']);
     $checkbox = checkInput($_POST['terms']);
     // Verificar se nome tem apenas letras e espaços
-    if (!preg_match("/^[a-zA-Z-' ]*$/",$name)) {
-        $err_name = "Only letters and white space allowed.";
+    if (!preg_match("/^[a-zA-Z-' ]*$/", $name)) {
+      $err_name = "Only letters and white space allowed.";
     }
     // Verificar se email tem formato válido
     if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
-        $err_email = "Invalid email format.";
+      $err_email = "Invalid email format.";
     }
     // Verificar se a senha tem 6 ou mais dígitos 
     if (strlen($password) < 6) {
-        $err_password = "Your password must be at least 6 characters long.";
+      $err_password = "Your password must be at least 6 characters long.";
     }
     // Verificar se a senha repetida é igual a anterior
     if ($password !== $rePassword) {
-        $err_rePassword = "Password do no match.";
+      $err_rePassword = "Password do not match.";
     }
     // Verificar se checkbox foi marcado
     if($checkbox !== "ok") {
-       $err_checkbox = "Disabled";
+      $err_checkbox = "Disabled";
     }
 
     if(!isset($general_err) && !isset($err_name) && !isset($err_email) && !isset($err_password) && !isset($err_rePassword) && !isset($err_checkbox)) {
-      // Verificar se o email já está cadastrado no banco
+      // Verificar se o email já está cadastrado no banco de dados
       $sql = $pdo->prepare("SELECT * FROM users WHERE email=? LIMIT 1");
       $sql->execute(array($email));
       $user = $sql->fetch();
       // Se não existir o usuário, adicionar ao banco
       if(!$user) {
-        $reset_password="";
+        $rePassword="";
         $token="";
-        $confirmation_code = uniqid();
+        $confirmationCode = uniqid();
         $status = "new";
-        $registration_date = date('d/m/Y');
+        $registrationDate = date('d/m/Y');
         $sql = $pdo->prepare("INSERT INTO users VALUES (null,?,?,?,?,?,?,?,?)");
-        if($sql->execute(array($name,$email,$password_cript,$reset_password,$token,$confirmation_code,$status,$registration_date))){
+        if($sql->execute(array($name,$email,$password_cript,$rePassword,$token,$confirmationCode,$status,$registrationDate))){
           // Se o modo de conexão for local
           if($modo == "local") {
             header('location: index.php?result=ok');
@@ -66,7 +66,7 @@ if(isset($_POST['fullName']) && isset($_POST['email']) && isset($_POST['password
               //Content
               $mail->isHTML(true); //Corpo do email como HTML
               $mail->Subject = 'Confirm your registration!'; // Título (assunto do email)
-              $mail->Body    = '<b><h1>Welcome to Project Vault</h1></b><br><br><p>To start using the platform, please, confirm your email address by clicking the button below:</p><br><br><a style="background:green; color:white; text-decoration:none; padding:20px; border-radius:5px" href="https://seusistema.com.br/confirmacao.php?cod_confirm='.$confirmation_code.'">Confirmar Email</a>';
+              $mail->Body    = '<b><h1>Welcome to Project Vault</h1></b><br><br><p>To start using the platform, please, confirm your email address by clicking the button below:</p><br><br><a style="background:green; color:white; text-decoration:none; padding:20px; border-radius:5px" href="https://seusistema.com.br/confirmacao.php?cod_confirm='.$confirmationCode.'">Confirmar Email</a>';
               $mail->send();
               header('location: thankyou.html');
             }catch (Exception $e) {
